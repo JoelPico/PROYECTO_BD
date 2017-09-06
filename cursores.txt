@@ -1,0 +1,137 @@
+hace un descuento propuesto por la empresa si la cantidad es igual o mayor a 123 productos
+-----------------------------------------------------
+1.
+DECLARE 
+    CURSOR NUMCLIENTES IS 
+    SELECT * FROM CLIENTE;
+    
+    --cedu_cliente NUMCLIENTES%ROWTYPE;
+    num_cliente NUMCLIENTES%ROWTYPE;
+    --ape_cliente NUMCLIENTES%ROWTYPE;
+    
+    
+BEGIN
+    
+    OPEN NUMCLIENTES;
+    LOOP
+        FETCH NUMCLIENTES INTO num_cliente;--,ape_cliente;
+        EXIT WHEN NUMCLIENTES%NOTFOUND;
+        DBMS_OUTPUT.PUT_LINE('-CEDULA: '||num_cliente.CI_CLIENTE||' -NOMBRE: '||num_cliente.NOMBRE_CLIENTE||' -APELLIDO: '|| num_cliente.APELLIDO_CLIENTE);--||'CANTIDAD'||ape_cliente.APELLIDO_CLIENTE);
+    END LOOP;
+    
+    CLOSE NUMCLIENTES;
+END;
+---------------------------------
+2.
+
+DECLARE 
+manta number;
+montecristi number;
+jaramijo number;
+sanmateo number;
+BEGIN
+manta :=0;
+montecristi :=0;
+jaramijo :=0;
+sanmateo :=0;
+
+SELECT count(id_cliente)
+into manta
+FROM cliente
+WHERE lower(CIUDAD_CLIENTE) = 'manta';
+
+SELECT count(id_cliente)
+into montecristi
+FROM cliente
+WHERE lower(CIUDAD_CLIENTE) = 'montecristi';
+
+SELECT count(id_cliente)
+into jaramijo
+FROM cliente
+WHERE lower(CIUDAD_CLIENTE) = 'jaramijo';
+
+SELECT count(id_cliente)
+into sanmateo
+FROM cliente
+WHERE lower(CIUDAD_CLIENTE) = 'san mateo';
+
+
+DBMS_OUTPUT.PUT_LINE('TENEMOS CLIENTES EN :'|| manta||' EN MANTA , '||montecristi||' EN MONTECISTI , '||jaramijo||' EN JARAMIJO, '||sanmateo||' EN SAN MATEO');
+END;
+
+
+***************----------------
+
+INSERT INTO CLIENTE VALUES(1,'13164598567','ANDRES','AGUILAR','0991693829','MANTA','BARRIO SAN PEDRO CALLE 31 AV 206');
+INSERT INTO CLIENTE VALUES(2,'13164598567','ANDRES','AGUILAR','0991693829','MANTA','BARRIO SAN PEDRO CALLE 31 AV 206');
+INSERT INTO CLIENTE VALUES(3,'13164598567','ANDRES','AGUILAR','0991693829','JARAMIJO','BARRIO SAN PEDRO CALLE 31 AV 206');
+
+INSERT INTO CLIENTE VALUES(1,'13164598567','ANDRES','AGUILAR','0991693829','MANTA','BARRIO SAN PEDRO CALLE 31 AV 206');
+INSERT INTO CLIENTE VALUES(2,'13164598567','MARIA','AGUILAR','0991693829','MONTECRISTI','BARRIO SAN PEDRO CALLE 31 AV 206');
+INSERT INTO CLIENTE VALUES(3,'13164598567','JOSE','AGUILAR','0991693829','SAN MATEO','BARRIO SAN PEDRO CALLE 31 AV 206');
+INSERT INTO CLIENTE VALUES(4,'13164598567','CARLOS','AGUILAR','0991693829','JARAMIJO','BARRIO SAN PEDRO CALLE 31 AV 206');
+INSERT INTO CLIENTE VALUES(5,'13164598567','VINCES','AGUILAR','0991693829','MANTA','BARRIO SAN PEDRO CALLE 31 AV 206');
+
+SELECT * FROM CLIENTE;
+SELECT * FROM VENDEDOR;
+
+INSERT INTO VENDEDOR VALUES (1,'13164534574','SLEIDER','PARRALES','3/09/1997','M','MANTA','SANTA CLARA CALLE 209 AV 45','SLEIDER@GMAIL.COM','0987568554',360,'6/09/2015','FIJO',NULL);
+INSERT INTO VENDEDOR VALUES (2,'13164534574','MARIO','PARRALES','3/09/1997','M','MANTA','SANTA CLARA CALLE 209 AV 45','SLEIDER@GMAIL.COM','0987568554',360,'6/09/2015','FIJO',NULL);
+INSERT INTO VENDEDOR VALUES (3,'13164534574','JOSE','PARRALES','3/09/1997','M','MANTA','SANTA CLARA CALLE 209 AV 45','SLEIDER@GMAIL.COM','0987568554',360,'6/09/2015','FIJO',NULL);
+INSERT INTO VENDEDOR VALUES (4,'13164534574','CARLOS','PARRALES','3/09/1997','M','MANTA','SANTA CLARA CALLE 209 AV 45','SLEIDER@GMAIL.COM','0987568554',360,'6/09/2015','FIJO',NULL);
+INSERT INTO VENDEDOR VALUES (5,'13164534574','JAVIER','PARRALES','3/09/1997','M','MANTA','SANTA CLARA CALLE 209 AV 45','SLEIDER@GMAIL.COM','0987568554',360,'6/09/2015','FIJO',NULL);
+
+***********************-------------------------
+
+------------------------------------------------------------------------------------
+3.
+--DETECCION DE EXEPCIONES DEFINIDAS POR EL USUARIO
+--ACTUALIZA LOS DATOS ESPECIFICOS DE UNA TABLA
+
+
+DECLARE 
+v_numEmple NUMBER :=12;
+v_nom VARCHAR(40) := 'ANA';
+numero_empleado_invalido EXCEPTION;
+BEGIN
+UPDATE VENDEDOR
+SET NOMBRE_VENDEDOR = v_nom
+WHERE id_vendedor = v_numEmple;
+IF SQL%NOTFOUND THEN
+RAISE numero_empleado_invalido;
+END IF;
+COMMIT;
+EXCEPTION
+WHEN numero_empleado_invalido THEN
+DBMS_OUTPUT.PUT_LINE('No existe el vendedor');
+END;
+
+-------------------------------------------------------------------------
+4.
+--INDICA LA CANTIDAD DE VENDEDORES QUE TENEMOS ACTUALMENTE
+DECLARE 
+    num_vendedor NUMBER(12);
+    muchos EXCEPTION;
+    nohay EXCEPTION;
+    
+BEGIN
+    SELECT count(1) INTO num_vendedor
+    FROM VENDEDOR;
+    
+    IF num_vendedor > 10 THEN
+        RAISE muchos;
+    END IF;
+    
+    IF num_vendedor < 1 THEN
+        RAISE nohay;
+    END IF;
+    
+    DBMS_OUTPUT.PUT_LINE('HAY '||num_vendedor||' VENDEDORES');
+    
+EXCEPTION
+    WHEN muchos THEN
+    DBMS_OUTPUT.PUT_LINE('MUCHOS REGISTROS');
+    WHEN nohay THEN
+    DBMS_OUTPUT.PUT_LINE('NO HAY REGISTROS');
+END;
+-------------------------------------------------------------------
